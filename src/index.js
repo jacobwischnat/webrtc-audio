@@ -21,11 +21,7 @@ app.use((req, res, next) => {
 
 app.use(basicAuth({
     challenge: true,
-    users: {
-        foo: 'foo',
-        foo: 'foo',
-        foo: 'foo'
-    }
+    users: JSON.parse(process.env.USERS)
 }))
 
 app.use(express.static(path.resolve(__dirname, '../assets')));

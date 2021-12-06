@@ -1,0 +1,9 @@
+[tool.tartufo]
+repo-path = "."
+json = false
+regex = true
+entropy = true
+exclude-path-patterns = [
+    "yarn.lock",
+    "assets/socket.io.js",
+]
