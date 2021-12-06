@@ -66,21 +66,22 @@ async function initialise() {
     });
 
     if (clientType === 'host') {
-        const audio = document.createElement('audio');
-        audio.src = 'landdown.mp3';
-        audio.loop = true;
-        audio.controls = true;
-        document.body.appendChild(audio);
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // const audio = document.createElement('audio');
+        // audio.src = 'landdown.mp3';
+        // audio.loop = true;
+        // audio.controls = true;
+        // document.body.appendChild(audio);
 
-        audio.addEventListener('playing', async () => {
-            const stream = await audio.captureStream();
-            const tracks = await stream.getTracks();
+        // audio.addEventListener('playing', async () => {
+        //     const stream = await audio.captureStream();
+        // }, { once: true });
+        const tracks = await stream.getTracks();
 
-            console.log('adding tracks', tracks.length);
-            tracks.forEach(track => peerConn.addTrack(track, stream));
-        }, { once: true });
+        console.log('adding tracks', tracks.length);
+        tracks.forEach(track => peerConn.addTrack(track, stream));
 
-        audio.play();
+        // audio.play();
     }
 
     if (clientType === 'client') {
