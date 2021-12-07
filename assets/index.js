@@ -106,11 +106,7 @@ class Connection {
 
         if (type === 'offer') {
             console.log('Receiving <- Offer');
-            // try {
-                await this.peerConn.setRemoteDescription({ type, sdp });
-            // } catch (ex) {
-            //     console.warn('Error setting Remote Offer', ex);
-            // }
+            await this.peerConn.setRemoteDescription({ type, sdp });
 
             console.log('Sending -> Answer');
             try {
