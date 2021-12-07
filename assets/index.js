@@ -169,13 +169,13 @@ async function initialise() {
 
     if (clientType === 'host') {
 
-        const audio = document.createElement('audio');
-        audio.src = 'landdown.mp3';
-        audio.loop = true;
-        await audio.play();
-        const stream = await audio.captureStream();
+        // const audio = document.createElement('audio');
+        // audio.src = 'landdown.mp3';
+        // audio.loop = true;
+        // await audio.play();
+        // const stream = await audio.captureStream();
 
-        // const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         console.log({ stream });
 
         iosocket.on('client.msg', async ({ source, type }) => {
