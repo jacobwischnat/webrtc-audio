@@ -7,6 +7,7 @@ class Connection {
         this.peerConn = new RTCPeerConnection();
         this.negotiating = false;
         this.clientId = clientId;
+        this.connected = false;
     }
 
     get haveClient() {
@@ -35,6 +36,12 @@ class Connection {
 
             if (this.peerConn.iceConnectionState === 'connected') {
                 document.querySelector('audio').play();
+
+                if (this.clientType === 'host' && this.stream) {
+                    const tracks = await this.stream.getTracks();
+                    console.log('Adding Tracks', tracks.length);
+                    tracks.forEach(track => this.peerConn.addTrack(track, this.stream));
+                }
             }
         });
 
@@ -66,6 +73,11 @@ class Connection {
     }
 
     async handleMessage({ source, type, sdp, candidate }) {
+        console.log({ source, type });
+        if (this.clientType !== 'host' && this.connected) {
+            return console.warn('Connected nothing needed here');
+        }
+
         if (type === 'connection' && this.clientType === 'host' && !this.haveClient) {
             this.clientId = source;
             console.log('New CONNECTION', source);
@@ -112,6 +124,7 @@ class Connection {
     }
 
     async handleTrack({ streams }) {
+        this.connected = true;
         console.log('Got Streams', streams.length);
 
         const stream = streams[0];
@@ -155,21 +168,20 @@ async function initialise() {
     console.log('I am the', clientType.toUpperCase());
 
     if (clientType === 'host') {
-        /*
+
         const audio = document.createElement('audio');
         audio.src = 'landdown.mp3';
         audio.loop = true;
         await audio.play();
         const stream = await audio.captureStream();
-        */
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        // const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         console.log({ stream });
 
         iosocket.on('client.msg', async ({ source, type }) => {
             if (type === 'connection' && clientType === 'host') {
                 const conn = new Connection(null, iosocket, clientType, stream);
                 await conn.connect();
-                conn.handleTrack({ streams: [ stream ] });
             }
         });
 
