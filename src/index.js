@@ -53,9 +53,9 @@ io.on('connection', socket => {
         console.log('hello', type);
         if (type === 'host') {
             host = id;
-            sendToClients({ type: 'connection' });
+            sendToClients({ source: id, type: 'connection' });
         } else {
-            sendToHost({ type: 'connection' });
+            sendToHost({ source: id, type: 'connection' });
         }
     });
 
@@ -64,17 +64,21 @@ io.on('connection', socket => {
         if (!host) {
             host = id;
             // Tell clients about new host
-            sendToClients('host.msg', { type: 'connection' });
+            sendToClients('host.msg', { source: id, type: 'connection' });
         } else {
-            sendToClients(msg);
+            sendToClients({ source: id, ...msg });
         }
     });
 
     socket.on('client.msg', msg => {
         console.log('client.msg');
         if (sockets.has(host)) {
-            const sock = sockets.get(host);
-            sock.emit('client.msg', msg);
+            const [source] = [...sockets.entries()].find(([_, v]) => v === socket);
+            console.log({ source });
+            if (source) {
+                const sock = sockets.get(host);
+                sock.emit('client.msg', { source,  ...msg });
+            }
         } else console.warn('No host');
     });
 
