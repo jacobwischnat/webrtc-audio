@@ -35,12 +35,6 @@ class Connection {
 
             if (this.peerConn.iceConnectionState === 'connected') {
                 document.querySelector('audio').play();
-
-                if (this.clientType === 'host' && this.stream) {
-                    const tracks = await this.stream.getTracks();
-                    console.log('Adding Tracks', tracks.length);
-                    tracks.forEach(track => this.peerConn.addTrack(track, this.stream));
-                }
             }
         });
 
